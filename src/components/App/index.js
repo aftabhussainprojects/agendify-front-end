@@ -4,6 +4,10 @@ import Form from "../Form/index";
 import NoteList from "../NoteList/index";
 import Agenda from "../Agenda/index";
 
+//const url = `https://agendify.herokuapp.com`;
+const url =
+  process.env.REACT_APP_BACKEND_URL || `https://agendify.herokuapp.com`;
+
 function App() {
   const [notes, setNotes] = useState([]);
   const [notesQuery, setNotesQuery] = useState({
@@ -63,9 +67,7 @@ function App() {
 
   // Get all data from API and set states for Notes list
   async function getNotesList() {
-    const res = await fetch(
-      "http://localhost:5000/notes" + buildQuery(notesQuery)
-    );
+    const res = await fetch(`${url}/notes${buildQuery(notesQuery)}`);
     const dataArray = await res.json();
     const mappedData = mapApiData(dataArray.data.rows);
     setNotes(mappedData);
@@ -73,9 +75,7 @@ function App() {
 
   // Get all data from API and set states for Agenda list
   async function getAgendaList() {
-    const res = await fetch(
-      "http://localhost:5000/notes" + buildQuery(agendaQuery)
-    );
+    const res = await fetch(`${url}/notes${buildQuery(agendaQuery)}`);
     const dataArray = await res.json();
     const mappedData = mapApiData(dataArray.data.rows);
     setAgenda(mappedData);
@@ -91,43 +91,47 @@ function App() {
   async function addLi(formEntry) {
     delete formEntry.dateTime;
     formEntry.userId = "student";
-    const postData = await fetch("http://localhost:5000/notes", {
+    const postData = await fetch(`${url}/notes`, {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formEntry),
     });
     const result = await postData.json;
+    console.log(result);
     setStateChange(!stateChange);
   }
 
   // Delete by ID from API
   async function deleteLi(id) {
-    const res = await fetch(`http://localhost:5000/notes/${id}`, {
+    const res = await fetch(`${url}/notes/${id}`, {
       method: "delete",
     });
     const deletedId = await res.json();
+    console.log(deletedId);
     setStateChange(!stateChange);
   }
 
   // Set onAgenda to true for note by ID
   async function addToAgenda(id) {
-    const res = await fetch(`http://localhost:5000/notes/${id}`, {
+    const res = await fetch(`${url}/notes/${id}`, {
       method: "put",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ onAgenda: true }),
     });
     const addedId = await res.json();
+    console.log(addedId);
     setStateChange(!stateChange);
   }
 
   // Set onAgenda to false for note by ID
   async function deleteFromAgenda(id) {
-    const res = await fetch(`http://localhost:5000/notes/${id}`, {
+    const res = await fetch(`${url}/notes/${id}`, {
       method: "put",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ onAgenda: false }),
     });
     const removedId = await res.json();
+    console.log(removedId);
     setStateChange(!stateChange);
   }
 
