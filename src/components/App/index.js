@@ -5,8 +5,7 @@ import NoteList from "../NoteList/index";
 import Agenda from "../Agenda/index";
 
 //const url = `https://agendify.herokuapp.com`;
-const url =
-  process.env.REACT_APP_BACKEND_URL || `https://agendify.herokuapp.com`;
+const url = process.env.REACT_APP_BACKEND_URL || `http://localhost:5000`;
 
 function App() {
   const [notes, setNotes] = useState([]);
@@ -38,20 +37,13 @@ function App() {
     return query.slice(0, -1);
   }
 
-  // Get query states from list components
-  function setQuery(list, queryObject) {
-    for (const key in queryObject) {
-      if (queryObject[key] === "all") {
-        queryObject[key] = null;
-      }
-    }
+  // Get query update from list components and update states
+  function setQuery(list, queryUpdate) {
     if (list === "notes") {
-      setNotesQuery(queryObject);
+      setNotesQuery({ ...notesQuery, ...queryUpdate });
     } else if (list === "agenda") {
-      setAgendaQuery(queryObject);
+      setAgendaQuery({ ...agendaQuery, ...queryUpdate });
     }
-    //setNotesQuery(queryObject);
-    setStateChange(!stateChange);
   }
 
   // Map received API data into a format suitable for React components
@@ -65,27 +57,28 @@ function App() {
     return dataArray;
   }
 
-  // Get all data from API and set states for Notes list
-  async function getNotesList() {
-    const res = await fetch(`${url}/notes${buildQuery(notesQuery)}`);
-    const dataArray = await res.json();
-    const mappedData = mapApiData(dataArray.data.rows);
-    setNotes(mappedData);
-  }
-
-  // Get all data from API and set states for Agenda list
-  async function getAgendaList() {
-    const res = await fetch(`${url}/notes${buildQuery(agendaQuery)}`);
-    const dataArray = await res.json();
-    const mappedData = mapApiData(dataArray.data.rows);
-    setAgenda(mappedData);
-  }
-
   // useEffect triggered everytime state changes, a bit hacky right now as stateChange is just a boolean that is toggled
   useEffect(() => {
+    // Get all data from API and set states for Notes list
+    async function getNotesList() {
+      const res = await fetch(`${url}/notes${buildQuery(notesQuery)}`);
+      const dataArray = await res.json();
+      const mappedData = mapApiData(dataArray.data.rows);
+      setNotes(mappedData);
+    }
+
+    // Get all data from API and set states for Agenda list
+    async function getAgendaList() {
+      const res = await fetch(`${url}/notes${buildQuery(agendaQuery)}`);
+      const dataArray = await res.json();
+      const mappedData = mapApiData(dataArray.data.rows);
+      setAgenda(mappedData);
+    }
+
+    // Call the functions when useEffect is triggered
     getNotesList();
     getAgendaList();
-  }, [stateChange]);
+  }, [stateChange, notesQuery, agendaQuery]);
 
   // Post form data to API
   async function addLi(formEntry) {
