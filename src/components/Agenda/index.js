@@ -33,6 +33,9 @@ function Agenda({ agenda, deleteFromAgenda, setQuery }) {
               })
             }
           >
+            <option value="" disabled selected hidden>
+              Choose Category...
+            </option>
             <option value="all">All</option>
             <option value="javascript">JavaScript</option>
             <option value="industry">Industry</option>
@@ -55,6 +58,9 @@ function Agenda({ agenda, deleteFromAgenda, setQuery }) {
               })
             }
           >
+            <option value="" disabled selected hidden>
+              Choose Priority...
+            </option>
             <option value="all">All</option>
             <option value="1">1. High</option>
             <option value="2">2. Medium</option>
@@ -71,6 +77,9 @@ function Agenda({ agenda, deleteFromAgenda, setQuery }) {
             name="sortBy"
             onChange={(e) => setQuery("agenda", { order: e.target.value })}
           >
+            <option value="" disabled selected hidden>
+              Sort by...
+            </option>
             <option value="descending">Newest Entries</option>
             <option value="ascending">Oldest Entries</option>
           </select>
